@@ -8,65 +8,68 @@ Under Review
 
 # Objective
 
-This RFC aims to introduce the design of "confidential model loader"
-addressing challenges of the integrity and confidentiality protection
-with no/low code for GenAI microservice. It is designed not only to
-prevent the model's theft and poisoning in development-time and runtime,
-but also to prevent disclosure of the sensitive enterprise knowledge
-fused in fine-tuned model.
+This RFC presents the design of "Confidential Model Loader" for
+ensuring the integrity and confidentiality of GenAI micro-services with
+minimum code changes. It is designed to prevent not only model theft and
+poisoning during development-time and runtime, but also disclosure of
+the sensitive enterprise data fused in fine-tuned models.
 
 # Motivation
 
-The handling and security of GenAI enterprise models includes model
-storage and model usage throughout the entire lifecycle from training to
-inference phase. It requires many different technologies to work
-together, such as general confidential computing technology reinforced
-by vendor-specific TEE (such as Intel TDX, AMD SEV/SEV-SNP, etc.),
-password-less full disk encryption (FDE) technology enhanced by remote
-attestation. They are very complex for GenAI developers or data
-scientists. Therefore, "Confidential Model Loader" can be used to
-protect models transparently to existing GenAI microservices (no/little
-code changes).
+To protect its integrity and confidentiality, it is required to cover
+both the storage and usage of a GenAI enterprise model throughout its
+entire lifecycle, from the training phase to the inference phase. This
+also involves various confidential computing technologies to work
+together seamlessly, such as vendor-specific trusted execution
+environment (e.g. Intel TDX, AMD SEV/SEV-SNP, etc.), password-less full
+disk encryption (FDE), and remote attestation. These technologies are
+very complex and require domain expertise to use. Therefore, the
+"Confidential Model Loader" is proposed to remove the adoption barrier
+of using these confidential computing technologies for GenAI developers
+and data scientists, so that GenAI models can be protected with minimum
+code changes to their existing micro-services.
 
 # Design Proposal
 
-According to the threat model mentioned at d at
-https://owaspai.org/docs/ai_security_overview/, for the model (including
-foundation and fine-tune model), it needs integrity protection for model
-poisoning and confidentiality protection for model theft. And the whole
-protection need to be considered from the phase of model-in-store to
-model-in-use.
+According to the threat model constructed by OWASP
+(https://owaspai.org/docs/ai_security_overview/), GenAI models (both
+foundation and fine-tune models) need integrity protection for model
+poisoning and confidentiality protection for model theft. Also, the
+protection needs to cover both model-in-store and model-in-use.
 
-The overall designs are as follows:
+The overall design is as follows:
 
 ![](./confidential_model_loader_architecture.png)
 
 The workflows is as follow:
 
-- Model-in-store phase: Models need to be encrypted to protect against
-  the threat of model theft via the following steps:
+- Phase of model-in-store:
 
-  In a trusted execution environment (may be enhanced by confidential
-  TEE or TPM):
+  Models can be protected against model theft in a trusted execution
+  environment (TEE) via the following steps (may be enhanced by
+  confidential TEE or TPM):
 
-  1. Create a model key with a key transfer policy, register model key
-     to Key Broker Server/Key Management Server.
-  2. Encrypt the model via model key.
-  3. Publish the encrypted model into model registry.
+  1. Create a model key with a key transfer policy, and register the
+     model key to a Key Broker Server/Key Management Server
+  2. Encrypt the model using the model key
+  3. Publish the encrypted model into a model registry
 
-- Model-in-use phase: the GenAI microservice need run within a TEE
-  environment, the "confidential model loader" is designed as
-  initContainer to decrypt the model via the following steps:
+- Phase of model-in-use:
+
+  GenAI micro-services need run within a TEE. The "Confidential Model
+  Loader" is designed as a "initContainer" to decrypt encrypted models
+  via the following steps:
 
   1. Calculate the evidence of both launch time and runtime measurement
-     at Node/Container level from configFS or vTPM.
-  2. Get model key via attestation service based on the evidences.
-  3. Decrypt the model and put it into RAM disk or the data disk with
-     "Full Disk Encryption".
+     at Node/Container level from configFS or vTPM
+  2. Get model key via attestation services based on the collected
+     evidences
+  3. Decrypt the model and put it into a RAM disk or a data disk with
+     FDE enabled
 
-With this design, the existing GenAI microservices do not need to change
-their code, thereby reducing the complexity of protecting the model
-through confidential computing technology.
+With this design, existing GenAI micro-services require minimum code
+changes, which reduces the complexity of protecting GenAI models with
+confidential computing technologies.
 
 # Alternatives Considered
 n/a
