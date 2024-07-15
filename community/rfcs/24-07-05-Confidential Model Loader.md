@@ -1,5 +1,7 @@
 # Author
-[kenplusplus](https://github.com/kenplusplus), [dongx1x](https://github.com/dongx1x), [hdxia](https://github.com/hdxia), [mkbhanda](https://github.com/kenplusplus/opea-docs/commits?author=mkbhanda), [ruomengh](https://github.com/ruomengh), [jodh-intel](https://github.com/jodh-intel), [likebreath](https://github.com/likebreath)
+@kenplusplus, @dongx1x, @hdxia, @mkbhanda, @ruomengh, @jodh-intel,
+@likebreath
+
 
 # Status
 Under Review
